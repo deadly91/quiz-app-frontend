@@ -1,7 +1,8 @@
 {
   "expo": {
     "name": "react-native-mastery",
-    "slug": "react-native-mastery",
+    "name": "RN-Quiz",
+    "slug": "RN-Quiz",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
