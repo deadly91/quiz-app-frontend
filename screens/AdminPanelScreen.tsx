@@ -4,9 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import NeonScreen from "../components/NeonScreen";
 import { RootStackParamList } from "../src/navigation/RootNavigator";
-import ManageQuestionsScreen from "./ManageQuestionsScreen";
-import ManageUsersScreen from "./ManageUsersScreen";
-import MetricsScreen from "./MetricsScreen";
+
 export default function AdminPanelScreen() {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();

@@ -17,7 +17,8 @@ interface User {
   email: string;
   nickname: string;
   role: string;
-  isBanned: boolean;
+  IsBanned: boolean;
+  createdAt: string;
 }
 
 export default function ManageUsersScreen() {
@@ -42,11 +43,9 @@ export default function ManageUsersScreen() {
     try {
       const token = await AsyncStorage.getItem("token");
       await axios.patch(
-        `http://10.0.2.2:3001/admin/users/${userId}/ban`,
-        { isBanned: !banned },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        `http://10.0.2.2:3001/api/admin/users/${userId}/ban`,
+        { IsBanned: !banned },
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       fetchUsers();
     } catch (err) {
@@ -59,75 +58,94 @@ export default function ManageUsersScreen() {
   }, []);
 
   return (
-    <NeonScreen showBottomBar disableScroll>
+    <NeonScreen showBottomBar>
       <Text style={styles.title}>👥 Manage Users</Text>
-      {loading ? (
-        <ActivityIndicator size="large" color="#00ffcc" />
-      ) : (
-        <FlatList
-          data={users}
-          keyExtractor={(item) => item._id}
-          renderItem={({ item }) => (
-            <View style={styles.card}>
-              <Text style={styles.nickname}>{item.nickname}</Text>
-              <Text style={styles.email}>{item.email}</Text>
-              <Text style={styles.status}>
-                Status: {item.isBanned ? "Banned" : "Active"}
-              </Text>
-              <TouchableOpacity
-                style={styles.banButton}
-                onPress={() => toggleBan(item._id, item.isBanned)}
-              >
-                <Text style={styles.banText}>
-                  {item.isBanned ? "Unban" : "Ban"}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          )}
-          contentContainerStyle={{ paddingBottom: 100 }}
-        />
-      )}
+
+      {users.map((item) => (
+        <View style={styles.card} key={item._id}>
+          <View style={styles.infoBlock}>
+            <Text style={styles.nickname}>{item.nickname}</Text>
+            <Text style={styles.email}>{item.email}</Text>
+            <Text style={styles.detail}>Role: {item.role}</Text>
+            <Text style={styles.detail}>
+              Status: {item.IsBanned ? "❌ Banned" : "✅ Active"}
+            </Text>
+            <Text style={styles.detail}>
+              Joined: {new Date(item.createdAt).toLocaleDateString()}
+            </Text>
+          </View>
+
+          <TouchableOpacity
+            style={[styles.banButton, item.IsBanned && styles.unbanButton]}
+            onPress={() => toggleBan(item._id, item.IsBanned)}
+          >
+            <Text style={styles.banText}>
+              {item.IsBanned ? "Unban" : "Ban"}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      ))}
     </NeonScreen>
   );
 }
 
 const styles = StyleSheet.create({
   title: {
-    fontSize: 24,
+    fontSize: 26,
     color: "#00ffcc",
     textAlign: "center",
     fontWeight: "bold",
-    marginVertical: 16,
+    marginVertical: 20,
+  },
+  listContent: {
+    paddingBottom: 160, // leave space for bottom bar
+    paddingHorizontal: 16,
   },
   card: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     backgroundColor: "#1a1a2e",
-    padding: 16,
-    marginHorizontal: 20,
-    marginBottom: 12,
-    borderRadius: 12,
+    padding: 20,
+    marginBottom: 20,
+    borderRadius: 16,
+    borderWidth: 1.5,
+    borderColor: "#00ffcc",
+  },
+  infoBlock: {
+    flexShrink: 1,
+    paddingRight: 16,
   },
   nickname: {
     fontSize: 18,
     fontWeight: "bold",
     color: "#fff",
+    marginBottom: 4,
   },
   email: {
     fontSize: 14,
     color: "#ccc",
+    marginBottom: 4,
   },
-  status: {
+  detail: {
     fontSize: 14,
-    color: "#00ffcc",
-    marginVertical: 8,
+    color: "#aaa",
+    marginBottom: 2,
   },
   banButton: {
     backgroundColor: "#ff4444",
-    padding: 10,
-    borderRadius: 6,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 10,
     alignItems: "center",
+    justifyContent: "center",
+  },
+  unbanButton: {
+    backgroundColor: "#00cc66",
   },
   banText: {
     color: "#fff",
     fontWeight: "bold",
+    fontSize: 16,
   },
 });

@@ -1,4 +1,5 @@
 import React from "react";
+
 import {
   Text,
   TextInput,
@@ -7,6 +8,7 @@ import {
   TextInputProps,
   GestureResponderEvent,
   View,
+  ScrollView,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import BottomButtonsBar from "./BottomButtonsBar";

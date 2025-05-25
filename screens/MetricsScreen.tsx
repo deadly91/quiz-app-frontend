@@ -1,12 +1,27 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ActivityIndicator, Alert } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  StyleSheet,
+  Alert,
+  ScrollView,
+} from "react-native";
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import NeonScreen from "../components/NeonScreen";
 
 interface Metrics {
+  totalUsers: number;
+  bannedUsers: number;
   totalQuizzes: number;
-  bestScore: number;
+  totalQuestions: number;
+  averageScore: number;
+  highestScore: number;
+  lowestScore: number;
+  mostUsedCategory: string;
+  newUsersThisWeek: number;
+  activeUsersThisWeek: number;
 }
 
 export default function MetricsScreen() {
@@ -16,16 +31,13 @@ export default function MetricsScreen() {
   const fetchMetrics = async () => {
     try {
       const token = await AsyncStorage.getItem("token");
-      if (!token) throw new Error("No token found");
-
-      const res = await axios.get("http://10.0.2.2:3001/api/user/metrics", {
+      const res = await axios.get("http://10.0.2.2:3001/api/admin/metrics", {
         headers: { Authorization: `Bearer ${token}` },
       });
-
       setMetrics(res.data);
     } catch (err) {
-      console.error("Failed to fetch metrics:", err);
-      Alert.alert("Error", "Failed to load metrics.");
+      console.error("Failed to fetch metrics", err);
+      Alert.alert("Error", "Failed to fetch metrics from the server");
     } finally {
       setLoading(false);
     }
@@ -36,21 +48,48 @@ export default function MetricsScreen() {
   }, []);
 
   return (
-    <NeonScreen showBottomBar disableScroll>
-      <Text style={styles.title}>📊 Your Quiz Stats</Text>
-      {loading ? (
-        <ActivityIndicator size="large" color="#00ffcc" />
-      ) : metrics ? (
-        <View style={styles.card}>
-          <Text style={styles.label}>Total Quizzes Completed</Text>
-          <Text style={styles.value}>{metrics.totalQuizzes}</Text>
-
-          <Text style={styles.label}>Best Score</Text>
-          <Text style={styles.value}>{metrics.bestScore}</Text>
-        </View>
-      ) : (
-        <Text style={styles.empty}>No metrics found.</Text>
-      )}
+    <NeonScreen showBottomBar>
+      <ScrollView contentContainerStyle={styles.scroll}>
+        <Text style={styles.title}>📊 App Metrics</Text>
+        {loading ? (
+          <ActivityIndicator size="large" color="#00ffcc" />
+        ) : metrics ? (
+          <View style={styles.container}>
+            <Text style={styles.metric}>
+              👥 Total Users: {metrics.totalUsers}
+            </Text>
+            <Text style={styles.metric}>
+              🚫 Banned Users: {metrics.bannedUsers}
+            </Text>
+            <Text style={styles.metric}>
+              🧠 Total Quizzes Taken: {metrics.totalQuizzes}
+            </Text>
+            <Text style={styles.metric}>
+              ❓ Total Questions: {metrics.totalQuestions}
+            </Text>
+            <Text style={styles.metric}>
+              📈 Average Score: {metrics.averageScore.toFixed(2)}
+            </Text>
+            <Text style={styles.metric}>
+              🏆 Highest Score: {metrics.highestScore}
+            </Text>
+            <Text style={styles.metric}>
+              💀 Lowest Score: {metrics.lowestScore}
+            </Text>
+            <Text style={styles.metric}>
+              🔥 Most Used Category: {metrics.mostUsedCategory}
+            </Text>
+            <Text style={styles.metric}>
+              🆕 New Users (7d): {metrics.newUsersThisWeek}
+            </Text>
+            <Text style={styles.metric}>
+              🟢 Active Users (7d): {metrics.activeUsersThisWeek}
+            </Text>
+          </View>
+        ) : (
+          <Text style={styles.metric}>No metrics available.</Text>
+        )}
+      </ScrollView>
     </NeonScreen>
   );
 }
@@ -61,26 +100,21 @@ const styles = StyleSheet.create({
     color: "#00ffcc",
     textAlign: "center",
     fontWeight: "bold",
-    marginBottom: 20,
+    marginVertical: 16,
   },
-  card: {
+  container: {
+    paddingHorizontal: 24,
+    gap: 16,
+  },
+  metric: {
+    fontSize: 18,
+    color: "#fff",
     backgroundColor: "#1a1a2e",
-    padding: 20,
-    borderRadius: 12,
-    marginHorizontal: 20,
+    padding: 12,
+    borderRadius: 8,
   },
-  label: {
-    fontSize: 16,
-    color: "#ccc",
-    marginTop: 10,
-  },
-  value: {
-    fontSize: 22,
-    color: "#00ffcc",
-    fontWeight: "bold",
-  },
-  empty: {
-    color: "#888",
-    textAlign: "center",
+  scroll: {
+    flexGrow: 1,
+    paddingVertical: 16,
   },
 });
