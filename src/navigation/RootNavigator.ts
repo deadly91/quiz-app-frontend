@@ -11,7 +11,9 @@ export type RootStackParamList = {
   Scores: undefined;
   Quiz: undefined;
   AdminPanel: undefined;
-  // QuizResult: { score: number; totalQuestions: number };
+  ManageUsers: undefined;
+  ManageQuestions: undefined;
+  Metrics: undefined;
 };
 
 // Export type helpers for use in screens

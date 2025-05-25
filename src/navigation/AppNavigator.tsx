@@ -7,6 +7,9 @@ import ScoresScreen from "../../screens/ScoresScreen";
 import { RootStack } from "./RootNavigator";
 import QuizScreen from "../../screens/QuizScreen";
 import AdminPanelScreen from "../../screens/AdminPanelScreen";
+import ManageUsersScreen from "../../screens/ManageUsersScreen";
+import ManageQuestionsScreen from "../../screens/ManageQuestionsScreen";
+import MetricsScreen from "../../screens/MetricsScreen";
 export default function AppNavigator() {
   return (
     <NavigationContainer>
@@ -33,6 +36,12 @@ export default function AppNavigator() {
           component={AdminPanelScreen}
           options={{ title: "Admin Panel" }}
         />
+        <RootStack.Screen name="ManageUsers" component={ManageUsersScreen} />
+        <RootStack.Screen
+          name="ManageQuestions"
+          component={ManageQuestionsScreen}
+        />
+        <RootStack.Screen name="Metrics" component={MetricsScreen} />
       </RootStack.Navigator>
     </NavigationContainer>
   );
