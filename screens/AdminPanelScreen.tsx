@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, Pressable, Animated } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../src/navigation/RootNavigator";
@@ -9,31 +9,50 @@ export default function AdminPanelScreen() {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
+  const createAnimatedButton = (
+    label: string,
+    route: keyof RootStackParamList
+  ) => {
+    const scale = new Animated.Value(1);
+
+    const handlePressIn = () => {
+      Animated.spring(scale, {
+        toValue: 0.95,
+        useNativeDriver: true,
+      }).start();
+    };
+
+    const handlePressOut = () => {
+      Animated.spring(scale, {
+        toValue: 1,
+        friction: 3,
+        tension: 40,
+        useNativeDriver: true,
+      }).start(() => {
+        navigation.navigate(route);
+      });
+    };
+
+    return (
+      <Animated.View style={{ transform: [{ scale }] }}>
+        <Pressable
+          onPressIn={handlePressIn}
+          onPressOut={handlePressOut}
+          style={styles.neonButton}
+        >
+          <Text style={styles.neonButtonText}>{label}</Text>
+        </Pressable>
+      </Animated.View>
+    );
+  };
+
   return (
     <NeonScreen showBottomBar>
       <View style={styles.container}>
         <Text style={styles.title}>🛠 Admin Panel</Text>
-
-        <TouchableOpacity
-          style={styles.neonButton}
-          onPress={() => navigation.navigate("ManageUsers")}
-        >
-          <Text style={styles.neonButtonText}>👥 Manage Users</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.neonButton}
-          onPress={() => navigation.navigate("ManageQuestions")}
-        >
-          <Text style={styles.neonButtonText}>❓ Manage Questions</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.neonButton}
-          onPress={() => navigation.navigate("Metrics")}
-        >
-          <Text style={styles.neonButtonText}>📊 View App Metrics</Text>
-        </TouchableOpacity>
+        {createAnimatedButton("👥 Manage Users", "ManageUsers")}
+        {createAnimatedButton("❓ Manage Questions", "ManageQuestions")}
+        {createAnimatedButton("📊 View App Metrics", "Metrics")}
       </View>
     </NeonScreen>
   );
