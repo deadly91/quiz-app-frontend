@@ -57,10 +57,14 @@ export default function HomeScreen() {
 
         {isAdmin && (
           <TouchableOpacity
-            style={styles.adminButton}
+            style={styles.adminCard}
+            activeOpacity={0.85}
             onPress={() => navigation.navigate("AdminPanel")}
           >
-            <Text style={styles.adminButtonText}>Go to Admin Panel</Text>
+            <Text style={styles.adminTitle}>🛠 Admin Panel</Text>
+            <Text style={styles.adminSubtitle}>
+              Manage users, questions, and metrics
+            </Text>
           </TouchableOpacity>
         )}
       </View>
@@ -102,16 +106,30 @@ const styles = StyleSheet.create({
     color: "#00ffcc",
     textAlign: "center",
   },
-  adminButton: {
-    backgroundColor: "#00ccff",
+  adminCard: {
     marginHorizontal: 20,
-    padding: 14,
-    borderRadius: 12,
+    padding: 18,
+    marginBottom: 20,
+    borderRadius: 14,
+    backgroundColor: "#1a1a2e",
+    borderWidth: 1,
+    borderColor: "#00ffcc",
+    shadowColor: "#00ffcc",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 6,
     alignItems: "center",
   },
-  adminButtonText: {
-    color: "#000",
+  adminTitle: {
+    color: "#00ffcc",
+    fontSize: 18,
     fontWeight: "bold",
-    fontSize: 16,
+    marginBottom: 6,
+  },
+  adminSubtitle: {
+    color: "#ccc",
+    fontSize: 13,
+    textAlign: "center",
   },
 });

@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   FlatList,
   StyleSheet,
-  ActivityIndicator,
   Alert,
 } from "react-native";
 import axios from "axios";
@@ -61,30 +60,38 @@ export default function ManageUsersScreen() {
     <NeonScreen showBottomBar>
       <Text style={styles.title}>👥 Manage Users</Text>
 
-      {users.map((item) => (
-        <View style={styles.card} key={item._id}>
-          <View style={styles.infoBlock}>
-            <Text style={styles.nickname}>{item.nickname}</Text>
-            <Text style={styles.email}>{item.email}</Text>
-            <Text style={styles.detail}>Role: {item.role}</Text>
-            <Text style={styles.detail}>
-              Status: {item.IsBanned ? "❌ Banned" : "✅ Active"}
-            </Text>
-            <Text style={styles.detail}>
-              Joined: {new Date(item.createdAt).toLocaleDateString()}
-            </Text>
-          </View>
+      <FlatList
+        data={users}
+        keyExtractor={(item) => item._id}
+        renderItem={({ item }) => (
+          <View style={styles.card}>
+            <View style={styles.infoBlock}>
+              <Text style={styles.nickname}>{item.nickname}</Text>
+              <Text style={styles.email}>{item.email}</Text>
+              <Text style={styles.detail}>Role: {item.role}</Text>
+              <Text style={styles.detail}>
+                <Text>
+                  {" "}
+                  Status: {item.IsBanned ? "❌ Banned" : "✅ Active"}{" "}
+                </Text>
+              </Text>
+              <Text style={styles.detail}>
+                Joined: {new Date(item.createdAt).toLocaleDateString()}
+              </Text>
+            </View>
 
-          <TouchableOpacity
-            style={[styles.banButton, item.IsBanned && styles.unbanButton]}
-            onPress={() => toggleBan(item._id, item.IsBanned)}
-          >
-            <Text style={styles.banText}>
-              {item.IsBanned ? "Unban" : "Ban"}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      ))}
+            <TouchableOpacity
+              style={[styles.banButton, item.IsBanned && styles.unbanButton]}
+              onPress={() => toggleBan(item._id, item.IsBanned)}
+            >
+              <Text style={styles.banText}>
+                {item.IsBanned ? "Unban" : "Ban"}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        contentContainerStyle={{ paddingBottom: 120 }}
+      />
     </NeonScreen>
   );
 }
@@ -98,7 +105,7 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   listContent: {
-    paddingBottom: 160, // leave space for bottom bar
+    paddingBottom: 160,
     paddingHorizontal: 16,
   },
   card: {

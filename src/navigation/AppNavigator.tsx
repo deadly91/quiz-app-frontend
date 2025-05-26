@@ -10,6 +10,8 @@ import AdminPanelScreen from "../../screens/AdminPanelScreen";
 import ManageUsersScreen from "../../screens/ManageUsersScreen";
 import ManageQuestionsScreen from "../../screens/ManageQuestionsScreen";
 import MetricsScreen from "../../screens/MetricsScreen";
+import AddQuestionScreen from "../../screens/AddQuestionScreen";
+
 export default function AppNavigator() {
   return (
     <NavigationContainer>
@@ -30,6 +32,7 @@ export default function AppNavigator() {
         <RootStack.Screen name="Register" component={RegisterScreen} />
         <RootStack.Screen name="Home" component={HomeScreen} />
         <RootStack.Screen name="Scores" component={ScoresScreen} />
+        <RootStack.Screen name="AddQuestion" component={AddQuestionScreen} />
         <RootStack.Screen name="Quiz" component={QuizScreen} />
         <RootStack.Screen
           name="AdminPanel"

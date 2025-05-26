@@ -1,5 +1,4 @@
 import React from "react";
-
 import {
   Text,
   TextInput,
@@ -8,9 +7,7 @@ import {
   TextInputProps,
   GestureResponderEvent,
   View,
-  ScrollView,
 } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import BottomButtonsBar from "./BottomButtonsBar";
 import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../src/navigation/RootNavigator";
@@ -20,37 +17,23 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 interface NeonScreenProps {
   children: React.ReactNode;
   showBottomBar?: boolean;
-  disableScroll?: boolean;
 }
 
 export default function NeonScreen({
   children,
   showBottomBar = false,
-  disableScroll = false,
 }: NeonScreenProps) {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  const Wrapper = disableScroll ? View : KeyboardAwareScrollView;
-  const wrapperProps = disableScroll
-    ? { style: styles.inner }
-    : {
-        contentContainerStyle: styles.inner,
-        enableOnAndroid: true,
-        extraScrollHeight: 100,
-        keyboardShouldPersistTaps: "handled" as const,
-      };
-
   return (
     <View style={styles.container}>
-      <Wrapper {...wrapperProps}>
-        <View style={styles.content}>{children}</View>
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>
-            © Gil Sasi {new Date().getFullYear()}. All rights reserved.
-          </Text>
-        </View>
-      </Wrapper>
+      <View style={styles.content}>{children}</View>
+      <View style={styles.footer}>
+        <Text style={styles.footerText}>
+          © Gil Sasi {new Date().getFullYear()}. All rights reserved.
+        </Text>
+      </View>
 
       {showBottomBar && (
         <BottomButtonsBar
@@ -114,9 +97,15 @@ NeonScreen.Button = function Button({
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0e0e1b" },
-  inner: { flexGrow: 1, justifyContent: "space-between" },
-  content: { padding: 30 },
+  container: {
+    flex: 1,
+    backgroundColor: "#0e0e1b",
+  },
+  content: {
+    flex: 1,
+    paddingHorizontal: 30,
+    paddingTop: 30,
+  },
   title: {
     fontSize: 28,
     fontWeight: "bold",
@@ -147,7 +136,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   footer: {
-    marginTop: 20,
     alignItems: "center",
     paddingVertical: 12,
   },
