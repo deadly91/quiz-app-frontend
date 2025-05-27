@@ -6,6 +6,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../src/navigation/RootNavigator";
 import Toast from "react-native-toast-message";
 import NeonScreen from "../components/NeonScreen";
+import NeonButton from "../components/NeonButton";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Login">;
 
@@ -53,7 +54,11 @@ export default function LoginScreen({ navigation }: Props) {
         secureTextEntry
       />
 
-      <NeonScreen.Button onPress={handleLogin}>Log In</NeonScreen.Button>
+      <NeonButton
+        label="Login"
+        iconName="right-to-bracket"
+        onPress={handleLogin}
+      />
 
       <TouchableOpacity onPress={() => navigation.navigate("Register")}>
         <Text style={{ marginTop: 20, textAlign: "center", color: "#0099ff" }}>

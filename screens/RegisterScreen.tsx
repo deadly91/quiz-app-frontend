@@ -5,6 +5,7 @@ import axios from "axios";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../src/navigation/RootNavigator";
 import NeonScreen from "../components/NeonScreen";
+import NeonButton from "../components/NeonButton";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Register">;
 
@@ -73,8 +74,11 @@ export default function RegisterScreen({ navigation }: Props) {
         onChangeText={setConfirmPassword}
         secureTextEntry
       />
-
-      <NeonScreen.Button onPress={handleRegister}>Register</NeonScreen.Button>
+      <NeonButton
+        label="Register"
+        iconName="pen-to-square"
+        onPress={handleRegister}
+      />
 
       <TouchableOpacity onPress={() => navigation.navigate("Login")}>
         <Text style={{ marginTop: 20, textAlign: "center", color: "#0099ff" }}>

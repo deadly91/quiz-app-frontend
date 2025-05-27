@@ -24,7 +24,7 @@ export default function AddQuestionScreen() {
   const [options, setOptions] = useState(["", "", "", ""]);
   const [correctAnswer, setCorrectAnswer] = useState("");
   const [category, setCategory] = useState("react-native");
-  const [timeLimit, setTimeLimit] = useState("10");
+  const [timeLimit, setTimeLimit] = useState("15");
 
   const handleAdd = async () => {
     if (!text || options.some((opt) => !opt) || !correctAnswer || !category) {

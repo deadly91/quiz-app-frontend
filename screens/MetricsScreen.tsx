@@ -77,9 +77,6 @@ export default function MetricsScreen() {
               💀 Lowest Score: {metrics.lowestScore}
             </Text>
             <Text style={styles.metric}>
-              🔥 Most Used Category: {metrics.mostUsedCategory}
-            </Text>
-            <Text style={styles.metric}>
               🆕 New Users (7d): {metrics.newUsersThisWeek}
             </Text>
             <Text style={styles.metric}>

@@ -11,7 +11,10 @@ import {
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NeonScreen from "../components/NeonScreen";
+import NeonButton from "../components/NeonButton";
 import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../src/navigation/RootNavigator";
 
 interface Question {
   _id: string;
@@ -27,11 +30,14 @@ export default function QuizScreen() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [feedback, setFeedback] = useState("");
-  const [timer, setTimer] = useState(10);
+  const [timer, setTimer] = useState(15);
   const [score, setScore] = useState(0);
+  const scoreRef = useRef(0);
+  const [hasStarted, setHasStarted] = useState(false);
   const countdown = useRef(new Animated.Value(1)).current;
-  const navigation = useNavigation();
   const currentQuestion = questions[currentIndex];
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const fetchQuestions = async () => {
     try {
@@ -41,7 +47,7 @@ export default function QuizScreen() {
       });
       setQuestions(res.data.questions);
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching questions:", err);
       Alert.alert("Error", "Failed to load quiz questions");
     }
   };
@@ -51,18 +57,24 @@ export default function QuizScreen() {
   }, []);
 
   useEffect(() => {
-    if (!currentQuestion) return;
+    if (!hasStarted || !currentQuestion) return;
 
-    setTimer(currentQuestion.timeLimit || 10);
+    setTimer(currentQuestion.timeLimit || 15);
     setSelectedOption(null);
     setFeedback("");
     countdown.setValue(1);
 
-    const interval = setInterval(() => {
+    // New: set an exact timeout alongside interval
+    const timeoutId = setTimeout(() => {
+      if (!selectedOption) {
+        handleTimeout();
+      }
+    }, (currentQuestion.timeLimit || 15) * 1000);
+
+    const intervalId = setInterval(() => {
       setTimer((prev) => {
         if (prev <= 1) {
-          clearInterval(interval);
-          handleTimeout();
+          clearInterval(intervalId);
           return 0;
         }
         return prev - 1;
@@ -71,12 +83,15 @@ export default function QuizScreen() {
 
     Animated.timing(countdown, {
       toValue: 0,
-      duration: (currentQuestion.timeLimit || 10) * 1000,
+      duration: (currentQuestion.timeLimit || 15) * 1000,
       useNativeDriver: false,
     }).start();
 
-    return () => clearInterval(interval);
-  }, [currentIndex]);
+    return () => {
+      clearInterval(intervalId);
+      clearTimeout(timeoutId); // clean up
+    };
+  }, [currentIndex, hasStarted]);
 
   const handleSelect = (option: string) => {
     if (selectedOption) return;
@@ -84,8 +99,10 @@ export default function QuizScreen() {
     setSelectedOption(option);
     const isCorrect = option === currentQuestion.correctAnswer;
     setFeedback(isCorrect ? "✅ Correct!" : "❌ Wrong!");
-    if (isCorrect) setScore((prev) => prev + 10);
-
+    if (isCorrect) {
+      scoreRef.current += 10;
+      setScore((prev) => prev + 10);
+    }
     setTimeout(goToNextQuestion, 1500);
   };
 
@@ -101,14 +118,17 @@ export default function QuizScreen() {
     } else {
       try {
         const token = await AsyncStorage.getItem("token");
+        const finalScore = scoreRef.current;
         await axios.post(
           "http://10.0.2.2:3001/api/quiz/submit",
-          { score },
+          { score: finalScore },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        Alert.alert("Quiz Complete", `You scored ${score} points!`);
-        navigation.goBack();
+        console.log("Score submitted successfully!");
+        Alert.alert("Quiz Complete", `You scored ${finalScore} points!`);
+        navigation.navigate("Scores");
       } catch (err) {
+        console.error("Error submitting score:", err);
         Alert.alert("Error", "Could not submit score");
       }
     }
@@ -118,6 +138,22 @@ export default function QuizScreen() {
     inputRange: [0, 1],
     outputRange: ["0%", "100%"],
   });
+
+  if (!hasStarted) {
+    return (
+      <NeonScreen showBottomBar>
+        <Text style={styles.title}>🧠 Quiz Challenge</Text>
+        <Text style={styles.rules}>10 Questions</Text>
+        <Text style={styles.rules}>10 Points per correct answer</Text>
+        <Text style={styles.rules}>Time limit: 15s/question</Text>
+        <NeonButton
+          label="Start Quiz"
+          iconName="file-pen"
+          onPress={() => setHasStarted(true)}
+        />
+      </NeonScreen>
+    );
+  }
 
   if (questions.length === 0 || !currentQuestion) {
     return (
@@ -169,19 +205,25 @@ export default function QuizScreen() {
 }
 
 const styles = StyleSheet.create({
+  title: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#00ffcc",
+    textAlign: "center",
+    marginVertical: 16,
+    paddingHorizontal: 10,
+  },
   step: {
     fontSize: 16,
     color: "#00ffcc",
     textAlign: "center",
     marginTop: 20,
   },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#00ffcc",
+  rules: {
+    fontSize: 16,
+    color: "#fff",
     textAlign: "center",
-    marginVertical: 16,
-    paddingHorizontal: 10,
+    marginVertical: 6,
   },
   option: {
     borderWidth: 1,

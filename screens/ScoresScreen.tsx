@@ -19,16 +19,16 @@ interface TokenPayload {
   nickname: string;
 }
 
-interface Score {
-  _id?: string;
-  email: string;
+interface ScoreEntry {
+  rank: number;
+  nickname: string;
   score: number;
 }
 
 export default function ScoresScreen() {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const [scores, setScores] = useState<Score[]>([]);
+  const [scores, setScores] = useState<ScoreEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -49,16 +49,11 @@ export default function ScoresScreen() {
         const res = await axios.get("http://10.0.2.2:3001/api/quiz/scores", {
           headers: { Authorization: `Bearer ${token}` },
         });
+
         setScores(res.data);
       } catch (err) {
         console.error("Failed to load scores", err);
-        setScores([
-          { email: "Player 1", score: 0 },
-          { email: "Player 2", score: 0 },
-          { email: "Player 3", score: 0 },
-          { email: "Player 4", score: 0 },
-          { email: "Player 5", score: 0 },
-        ]);
+        setScores([]);
       } finally {
         setLoading(false);
       }
@@ -68,18 +63,18 @@ export default function ScoresScreen() {
   }, []);
 
   return (
-    <NeonScreen showBottomBar disableScroll>
+    <NeonScreen showBottomBar>
       <Text style={styles.title}>🏆 Scoreboard</Text>
       {loading ? (
         <ActivityIndicator color="#00ffcc" size="large" />
       ) : (
         <FlatList
           data={scores}
-          keyExtractor={(_, index) => index.toString()}
-          renderItem={({ item, index }) => (
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => (
             <View style={styles.scoreItem}>
-              <Text style={styles.rank}>{index + 1}.</Text>
-              <Text style={styles.email}>{item.email}</Text>
+              <Text style={styles.rank}>{item.rank}.</Text>
+              <Text style={styles.nickname}>{item.nickname || "Unknown"}</Text>
               <Text style={styles.score}>{item.score}</Text>
             </View>
           )}
@@ -105,9 +100,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     marginVertical: 6,
+    alignItems: "center",
   },
   rank: { color: "#00ffcc", fontWeight: "bold" },
-  email: { color: "#fff", flex: 1, marginLeft: 10 },
+  nickname: { color: "#fff", flex: 1, marginLeft: 10 },
   score: { color: "#00ffcc", fontWeight: "bold" },
 });
-//scores

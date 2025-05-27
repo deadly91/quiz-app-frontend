@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { jwtDecode } from "jwt-decode";
 import NeonScreen from "../components/NeonScreen";
+import NeonButton from "../components/NeonButton";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../src/navigation/RootNavigator";
@@ -56,16 +57,18 @@ export default function HomeScreen() {
         </View>
 
         {isAdmin && (
-          <TouchableOpacity
-            style={styles.adminCard}
-            activeOpacity={0.85}
-            onPress={() => navigation.navigate("AdminPanel")}
-          >
-            <Text style={styles.adminTitle}>🛠 Admin Panel</Text>
+          <>
+            <NeonButton
+              label="Admin Panel"
+              iconName="screwdriver-wrench"
+              onPress={() => navigation.navigate("AdminPanel")}
+              textStyle={{ fontSize: 16 }}
+              style={{ marginHorizontal: 40, marginTop: 20 }}
+            />
             <Text style={styles.adminSubtitle}>
               Manage users, questions, and metrics
             </Text>
-          </TouchableOpacity>
+          </>
         )}
       </View>
     </NeonScreen>
@@ -106,30 +109,10 @@ const styles = StyleSheet.create({
     color: "#00ffcc",
     textAlign: "center",
   },
-  adminCard: {
-    marginHorizontal: 20,
-    padding: 18,
-    marginBottom: 20,
-    borderRadius: 14,
-    backgroundColor: "#1a1a2e",
-    borderWidth: 1,
-    borderColor: "#00ffcc",
-    shadowColor: "#00ffcc",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 6,
-    alignItems: "center",
-  },
-  adminTitle: {
-    color: "#00ffcc",
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 6,
-  },
   adminSubtitle: {
     color: "#ccc",
     fontSize: 13,
     textAlign: "center",
+    marginTop: 8,
   },
 });
