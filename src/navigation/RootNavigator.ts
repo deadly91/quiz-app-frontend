@@ -18,6 +18,11 @@ export type RootStackParamList = {
   Profile: undefined;
   QuizHistory: undefined;
   ChangePassword: undefined;
+  QuizResult: {
+    score: number;
+    correctAnswers?: number;
+    totalQuestions?: number;
+  };
 };
 
 // Export type helpers for use in screens

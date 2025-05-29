@@ -48,11 +48,9 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.card}>
-          <Text style={styles.description}>
-            Welcome to the React Native Quiz Game
-          </Text>
+          <Text style={styles.description}>Welcome to the Quiz Game</Text>
           <Text style={styles.subtext}>
-            A fast way to test and improve your React Native fundamentals.
+            A fast way to test and improve your programming skills.
           </Text>
         </View>
 

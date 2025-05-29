@@ -14,7 +14,7 @@ import AddQuestionScreen from "../../screens/AddQuestionScreen";
 import ProfileScreen from "../../screens/ProfileScreen";
 import ChangePasswordScreen from "../../screens/ChangePasswordScreen";
 import QuizHistory from "../../screens/QuizHistoryScreen";
-
+import QuizResultScreen from "../../screens/QuizResultScreen";
 export default function AppNavigator() {
   return (
     <NavigationContainer>
@@ -37,6 +37,7 @@ export default function AppNavigator() {
         <RootStack.Screen name="Scores" component={ScoresScreen} />
         <RootStack.Screen name="AddQuestion" component={AddQuestionScreen} />
         <RootStack.Screen name="Quiz" component={QuizScreen} />
+        <RootStack.Screen name="QuizResult" component={QuizResultScreen} />
         <RootStack.Screen
           name="AdminPanel"
           component={AdminPanelScreen}

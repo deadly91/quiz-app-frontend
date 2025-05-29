@@ -12,6 +12,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NeonScreen from "../components/NeonScreen";
 import NeonButton from "../components/NeonButton";
+import ScoreReveal from "../components/ScoreReveal"; // ✅ new import
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../src/navigation/RootNavigator";
@@ -32,8 +33,9 @@ export default function QuizScreen() {
   const [feedback, setFeedback] = useState("");
   const [timer, setTimer] = useState(15);
   const [score, setScore] = useState(0);
-  const scoreRef = useRef(0);
   const [hasStarted, setHasStarted] = useState(false);
+  const [hasFinished, setHasFinished] = useState(false);
+  const scoreRef = useRef(0);
   const countdown = useRef(new Animated.Value(1)).current;
   const currentQuestion = questions[currentIndex];
   const navigation =
@@ -64,7 +66,6 @@ export default function QuizScreen() {
     setFeedback("");
     countdown.setValue(1);
 
-    // New: set an exact timeout alongside interval
     const timeoutId = setTimeout(() => {
       if (!selectedOption) {
         handleTimeout();
@@ -89,7 +90,7 @@ export default function QuizScreen() {
 
     return () => {
       clearInterval(intervalId);
-      clearTimeout(timeoutId); // clean up
+      clearTimeout(timeoutId);
     };
   }, [currentIndex, hasStarted]);
 
@@ -113,20 +114,26 @@ export default function QuizScreen() {
   };
 
   const goToNextQuestion = async () => {
-    if (currentIndex + 1 < questions.length) {
+    if (currentIndex < questions.length - 1) {
       setCurrentIndex((prev) => prev + 1);
     } else {
       try {
         const token = await AsyncStorage.getItem("token");
         const finalScore = scoreRef.current;
+
         await axios.post(
           "http://10.0.2.2:3001/api/quiz/submit",
-          { score: finalScore },
-          { headers: { Authorization: `Bearer ${token}` } }
+          {
+            score: finalScore,
+            totalQuestions: questions.length,
+            correctAnswers: finalScore / 10, // assuming +10 per correct
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
         );
-        console.log("Score submitted successfully!");
-        Alert.alert("Quiz Complete", `You scored ${finalScore} points!`);
-        navigation.navigate("Scores");
+
+        setHasFinished(true); // display animated score screen
       } catch (err) {
         console.error("Error submitting score:", err);
         Alert.alert("Error", "Could not submit score");
@@ -138,6 +145,20 @@ export default function QuizScreen() {
     inputRange: [0, 1],
     outputRange: ["0%", "100%"],
   });
+
+  // ✅ Show final score reveal
+  if (hasFinished) {
+    return (
+      <NeonScreen showBottomBar>
+        <ScoreReveal finalScore={scoreRef.current} />
+        <NeonButton
+          label="🏠 Back to Home"
+          iconName="house"
+          onPress={() => navigation.navigate("Home")}
+        />
+      </NeonScreen>
+    );
+  }
 
   if (!hasStarted) {
     return (
