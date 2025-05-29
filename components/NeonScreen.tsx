@@ -49,6 +49,12 @@ export default function NeonScreen({
               onPress: () => navigation.navigate("Quiz"),
             },
             {
+              icon: "👤",
+              label: "Profile",
+              onPress: () => navigation.navigate("Profile"),
+            },
+
+            {
               icon: "🧾",
               label: "Scores",
               onPress: () => navigation.navigate("Scores"),

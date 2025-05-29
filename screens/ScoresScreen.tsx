@@ -64,7 +64,7 @@ export default function ScoresScreen() {
 
   return (
     <NeonScreen showBottomBar>
-      <Text style={styles.title}>🏆 Scoreboard</Text>
+      <Text style={styles.title}>🏆 LeaderBoard</Text>
       {loading ? (
         <ActivityIndicator color="#00ffcc" size="large" />
       ) : (

@@ -11,6 +11,9 @@ import ManageUsersScreen from "../../screens/ManageUsersScreen";
 import ManageQuestionsScreen from "../../screens/ManageQuestionsScreen";
 import MetricsScreen from "../../screens/MetricsScreen";
 import AddQuestionScreen from "../../screens/AddQuestionScreen";
+import ProfileScreen from "../../screens/ProfileScreen";
+import ChangePasswordScreen from "../../screens/ChangePasswordScreen";
+import QuizHistory from "../../screens/QuizHistoryScreen";
 
 export default function AppNavigator() {
   return (
@@ -45,6 +48,13 @@ export default function AppNavigator() {
           component={ManageQuestionsScreen}
         />
         <RootStack.Screen name="Metrics" component={MetricsScreen} />
+        <RootStack.Screen name="Profile" component={ProfileScreen} />
+        <RootStack.Screen name="QuizHistory" component={QuizHistory} />
+        <RootStack.Screen
+          name="ChangePassword"
+          component={ChangePasswordScreen}
+          options={{ title: "Change Password" }}
+        />
       </RootStack.Navigator>
     </NavigationContainer>
   );

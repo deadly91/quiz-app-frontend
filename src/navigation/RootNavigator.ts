@@ -15,6 +15,9 @@ export type RootStackParamList = {
   ManageUsers: undefined;
   Metrics: undefined;
   AddQuestion: undefined;
+  Profile: undefined;
+  QuizHistory: undefined;
+  ChangePassword: undefined;
 };
 
 // Export type helpers for use in screens
