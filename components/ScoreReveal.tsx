@@ -3,7 +3,7 @@ import { StyleSheet, View, Text } from "react-native";
 import Animated, {
   useSharedValue,
   withTiming,
-  useAnimatedStyle,
+  runOnJS,
 } from "react-native-reanimated";
 
 interface Props {
@@ -15,29 +15,32 @@ export default function ScoreReveal({ finalScore }: Props) {
   const [displayScore, setDisplayScore] = useState(0);
 
   useEffect(() => {
-    score.value = withTiming(finalScore, { duration: 1500 });
-    const interval = setInterval(() => {
-      // Safely read the value from JS side
-      score.value >= finalScore
-        ? clearInterval(interval)
-        : setDisplayScore((prev) => {
-            const next = prev + 1;
-            return next > finalScore ? finalScore : next;
-          });
-    }, 30);
-    return () => clearInterval(interval);
-  }, [finalScore]);
+    const updateDisplay = (val: number) => {
+      setDisplayScore(Math.round(val));
+    };
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: withTiming(1.1, { duration: 500 }) }],
-  }));
+    // Animate score and update UI during animation
+    score.value = withTiming(finalScore, { duration: 1500 }, (finished) => {
+      if (finished) {
+        runOnJS(setDisplayScore)(finalScore); // make sure it's exact at the end
+      }
+    });
+
+    const frameLoop = () => {
+      "worklet";
+      runOnJS(setDisplayScore)(Math.round(score.value));
+      if (score.value < finalScore) {
+        requestAnimationFrame(frameLoop);
+      }
+    };
+
+    requestAnimationFrame(frameLoop);
+  }, [finalScore]);
 
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Your Score:</Text>
-      <Animated.Text style={[styles.score, animatedStyle]}>
-        {displayScore}
-      </Animated.Text>
+      <Text style={styles.score}>{displayScore}</Text>
     </View>
   );
 }
